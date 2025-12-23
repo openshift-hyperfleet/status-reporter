@@ -55,8 +55,8 @@ else
 endif
 
 # Directories
-# Find all Go packages, excluding vendor and test directories
-PKG_DIRS := $(shell $(GOCMD) list ./... 2>/dev/null | grep -v /vendor/ | grep -v /test/)
+# Find all Go packages, excluding vendor, test, and integration test directories
+PKG_DIRS := $(shell $(GOCMD) list ./... 2>/dev/null | grep -v /vendor/ | grep -v '/test/')
 
 .PHONY: help
 help: ## Display this help message
@@ -80,6 +80,17 @@ test-coverage-html: test-coverage ## Generate HTML coverage report
 	@echo "Generating HTML coverage report..."
 	$(GOCMD) tool cover -html=$(COVERAGE_OUT) -o $(COVERAGE_HTML)
 	@echo "HTML coverage report generated: $(COVERAGE_HTML)"
+
+.PHONY: test-integration
+test-integration: ## Run integration tests
+	@echo "Running integration tests..."
+	@if [ -d "test/integration" ] && [ -n "$$(find test/integration -name '*_test.go' 2>/dev/null)" ]; then \
+		$(GOTEST) -v $(RACE_FLAG) -timeout $(TEST_TIMEOUT) ./test/integration/...; \
+	else \
+		echo "No integration tests found in test/integration directory"; \
+		echo "Please add integration tests to test/integration directory"; \
+		exit 0; \
+	fi
 
 .PHONY: lint
 lint: ## Run golangci-lint
