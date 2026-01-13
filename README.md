@@ -382,5 +382,4 @@ verify               Run all verification checks (lint + test)
 See LICENSE file for details.
 
 ## Contact
-
 For questions or issues, please open a GitHub issue in this repository.
